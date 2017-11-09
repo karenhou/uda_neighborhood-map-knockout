@@ -17,10 +17,16 @@
             </div>
         </div>
         <div class="row">
-            <ul data-bind="foreach: allPlaces">
-                <li data-bind="text: title"></li>
+            <ul data-bind="foreach: locationList">
+                <li data-bind="text: title, click: $parent.setPlace"></li>
                 <hr>
             </ul>
+        </div>
+        <div class="row">
+            <div data-bind="with: currentPlace">
+                <h1 data-bind="text: latLng().lat"></h1>
+                <h1 data-bind="text: latLng().lng"></h1>
+            </div>
         </div>
         <div class="row">
             <div id="map"></div>

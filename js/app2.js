@@ -1,4 +1,5 @@
-var locations = [{
+// models
+var init_locations = [{
         title: 'my airbnb',
         latLng: { lat: 50.10504, lng: 8.64451 }
     },
@@ -36,48 +37,82 @@ var locations = [{
     }
 ];
 
+var Locations = function(data) {
+    this.title = ko.observable(data.title);
+    this.latLng = ko.observable(data.latLng);
+    this.marker = null;
+};
+
 var infowindow = new google.maps.InfoWindow();
+var markers = [];
 
-function populateInfoWindow(marker, infowindow) {
-        if (infowindow.marker != marker) {
-            infowindow.marker = marker;
-            infowindow.setContent('<div>Lat: ' + marker.title()+ ' </div>');
-            infowindow.open(map, marker);
-            infowindow.addListener('closeclick', function() {
-                infowindow.setMarker(null);
-            });
-
-            // Open the infowindow on the correct marker.
-            //infowindow.open(map, marker);
-        }
-}
-
-var koViewModel = function(map, locationList) {
+var koViewModel = function(map) {
     var self = this;
 
     self.googleMap = map;
 
-    self.allPlaces = [];
-    locationList.forEach(function(place) {
-        self.allPlaces.push(new Place(place));
+    this.locationList = ko.observableArray([]);
+
+    init_locations.forEach(function(place) {
+        self.locationList.push(new Locations(place));
     });
 
-    self.allPlaces.forEach(function(place) {
-        var markerOptions = {
-            map: self.googleMap,
-            title: place.title,
-            position: place.latLng,
-            animation: google.maps.Animation.DROP,
-        };
+    this.currentPlace = ko.observable(this.locationList()[0]);
 
-        place.marker = new google.maps.Marker(markerOptions);
+    this.setPlace = function(clickedPlace) {
+        self.currentPlace(clickedPlace);
+    };
+
+    for (var i = 0; i < self.locationList().length; i++) {
+
+        var position = self.locationList()[i].latLng();
+        var title = self.locationList()[i].title();
+
+        var marker = new google.maps.Marker({
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            map: self.googleMap,
+        });
+
+        markers.push(marker);
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infowindow.setContent('<div>Name: ' + marker.title + ' </div>' +
+                    '<div>Lat:' + marker.position.lat() + '</div>' +
+                    '<div>Lng:' + marker.position.lng() + '</div>');
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
+        /*marker.addListener('click', function() {
+            infowindow.setContent('<div>Name: ' + marker.title + ' </div>' +
+                '<div>Lat:' + marker.position.lat() + '</div>' +
+                '<div>Lng:' + marker.position.lng() + '</div>');
+            infowindow.open(map, marker);
+        });*/
+
+
+        markers[i].setMap(self.googleMap);
+    }
+
+
+    /*self.locationList.forEach(function(){
+        var marker = new google.maps.Marker({
+            position: place.latLng,
+            title: place.title,
+            animation: google.maps.Animation.DROP,
+            map:self.googleMap,
+        });
+
         place.marker.addListener('click', function(){
             infowindow.setContent('<div>Name: ' + markerOptions.title +' </div>' + 
                 '<div>Lat:' + markerOptions.position.lat+'</div>' +
                 '<div>Lng:' + markerOptions.position.lng+'</div>');
             infowindow.open(map, place.marker);
         });
-    });
+    });*/
+
+    /*
 
     self.visiblePlaces = ko.observableArray();
 
@@ -108,23 +143,21 @@ var koViewModel = function(map, locationList) {
         this.title = dataObj.title;
         this.latLng = dataObj.latLng;
         this.marker = null;
-    }
+    }*/
 
-};
+}
 
-var German_latlng = { lat: 50.110924, lng: 8.682127 };
+var my_position = { lat: 50.110924, lng: 8.682127 };
 
 
 function createMap() {
     return new google.maps.Map(document.getElementById('map'), {
-        center: German_latlng,
+        center: my_position,
         zoom: 14
     });
 }
+
 google.maps.event.addDomListener(window, 'load', function() {
-    //ko.applyBindings(new viewModel());
     var googleMap = createMap();
-    ko.applyBindings(new koViewModel(googleMap, locations));
-
+    ko.applyBindings(new koViewModel(googleMap));
 });
-
