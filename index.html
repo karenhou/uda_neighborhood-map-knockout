@@ -12,8 +12,8 @@
     <div class="container-fluid">
         <div class="row">
             <div>
-                <span class="text"></span>
-                <input id="places-search" type="text" placeholder="Filter List">
+                <input data-bind="value: userInput" id="place-filter" type="text" placeholder="Filter List">
+                <button data-bind="click: filterMarkers">Filter</button>
             </div>
         </div>
         <div class="row">

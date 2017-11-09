@@ -44,6 +44,7 @@ var Locations = function(data) {
 };
 
 var infowindow = new google.maps.InfoWindow();
+
 var markers = [];
 
 var koViewModel = function(map) {
@@ -84,71 +85,30 @@ var koViewModel = function(map) {
                 infowindow.open(map, marker);
             }
         })(marker, i));
-        /*marker.addListener('click', function() {
-            infowindow.setContent('<div>Name: ' + marker.title + ' </div>' +
-                '<div>Lat:' + marker.position.lat() + '</div>' +
-                '<div>Lng:' + marker.position.lng() + '</div>');
-            infowindow.open(map, marker);
-        });*/
-
 
         markers[i].setMap(self.googleMap);
     }
 
-
-    /*self.locationList.forEach(function(){
-        var marker = new google.maps.Marker({
-            position: place.latLng,
-            title: place.title,
-            animation: google.maps.Animation.DROP,
-            map:self.googleMap,
-        });
-
-        place.marker.addListener('click', function(){
-            infowindow.setContent('<div>Name: ' + markerOptions.title +' </div>' + 
-                '<div>Lat:' + markerOptions.position.lat+'</div>' +
-                '<div>Lng:' + markerOptions.position.lng+'</div>');
-            infowindow.open(map, place.marker);
-        });
-    });*/
-
-    /*
-
-    self.visiblePlaces = ko.observableArray();
-
-    self.allPlaces.forEach(function(place) {
-        self.visiblePlaces.push(place);
-    });
-
     self.userInput = ko.observable('');
 
     self.filterMarkers = function() {
+        var queryMarker = [];
         var searchInput = self.userInput().toLowerCase();
 
-        self.visiblePlaces.removeAll();
-
-        self.allPlaces.forEach(function(place) {
-            place.marker.setMap(null);
-            if (place.name.toLowerCase().indexOf(searchInput) !== -1) {
-                self.visiblePlaces.push(place);
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+            if (markers[i].title.toLowerCase().indexOf(searchInput) !== -1) {
+                queryMarker.push(markers[i]);
             }
-        });
+        }
+        for (var i = 0; i < queryMarker.length; i++) {
+            queryMarker[i].setMap(self.googleMap);
+        }
 
-        self.visiblePlaces().forEach(function(place) {
-            place.marker.setMap(self.googleMap);
-        });
     };
-
-    function Place(dataObj) {
-        this.title = dataObj.title;
-        this.latLng = dataObj.latLng;
-        this.marker = null;
-    }*/
-
 }
 
 var my_position = { lat: 50.110924, lng: 8.682127 };
-
 
 function createMap() {
     return new google.maps.Map(document.getElementById('map'), {
