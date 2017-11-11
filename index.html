@@ -12,8 +12,7 @@
     <div class="container-fluid">
         <div class="row">
             <div>
-                <input data-bind="value: userInput" id="place-filter" type="text" placeholder="Filter List">
-                <button data-bind="click: filterMarkers">Filter</button>
+                <input type="text" data-bind="textInput: userInput, event:{keyup: filterMarkers}" autocomplete="on" id="place-filter" placeholder="Filter List">
             </div>
         </div>
         <div class="row">

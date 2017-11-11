@@ -47,6 +47,27 @@ var infowindow = new google.maps.InfoWindow();
 
 var markers = [];
 
+function toggleMarker(marker) {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() {
+        marker.setAnimation(null);
+    }, 1200);
+};
+
+function populateInfoWindow(marker, infowindow) {
+    if (infowindow.marker != marker) {
+        infowindow.marker = marker;
+        infowindow.setContent('<div>Name: ' + marker.title + ' </div>' +
+            '<div>Lat: ' + marker.getPosition().lat() + '</div>' +
+            '<div>Lng: ' + marker.getPosition().lng() + ' </div>');
+        infowindow.open(map, marker);
+        infowindow.addListener('closeclick', function() {
+            infowindow.setMarker(null);
+        });
+    }
+    toggleMarker(marker);
+}
+
 var koViewModel = function(map) {
     var self = this;
 
@@ -57,12 +78,6 @@ var koViewModel = function(map) {
     init_locations.forEach(function(place) {
         self.locationList.push(new Locations(place));
     });
-
-    this.currentPlace = ko.observable(this.locationList()[0]);
-
-    this.setPlace = function(clickedPlace) {
-        self.currentPlace(clickedPlace);
-    };
 
     for (var i = 0; i < self.locationList().length; i++) {
 
@@ -77,34 +92,46 @@ var koViewModel = function(map) {
         });
 
         markers.push(marker);
-        google.maps.event.addListener(marker, 'click', (function(marker, i) {
-            return function() {
-                infowindow.setContent('<div>Name: ' + marker.title + ' </div>' +
-                    '<div>Lat:' + marker.position.lat() + '</div>' +
-                    '<div>Lng:' + marker.position.lng() + '</div>');
-                infowindow.open(map, marker);
-            }
-        })(marker, i));
+
+        marker.addListener('click', function() {
+            populateInfoWindow(this, infowindow);
+        });
 
         markers[i].setMap(self.googleMap);
     }
 
+    this.currentPlace = ko.observable(this.locationList()[0]);
+
+    this.setPlace = function(clickedPlace) {
+
+        self.currentPlace(clickedPlace);
+
+        for (var i = 0; i < markers.length; i++) {
+            if (markers[i].title === self.currentPlace().title()) {
+                toggleMarker(markers[i]);
+                populateInfoWindow(markers[i], infowindow);
+            }
+        }
+    };
+
     self.userInput = ko.observable('');
 
     self.filterMarkers = function() {
-        var queryMarker = [];
+        if(infowindow) {
+            infowindow.close();
+        }
         var searchInput = self.userInput().toLowerCase();
 
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(null);
-            if (markers[i].title.toLowerCase().indexOf(searchInput) !== -1) {
-                queryMarker.push(markers[i]);
-            }
-        }
-        for (var i = 0; i < queryMarker.length; i++) {
-            queryMarker[i].setMap(self.googleMap);
-        }
+        self.locationList.removeAll();
 
+        for (var i = 0; i < init_locations.length; i++) {
+            if (init_locations[i].title.toLowerCase().indexOf(searchInput) !== -1) {
+                self.locationList.push(new Locations(init_locations[i]));
+                markers[i].setVisible(true);
+            } else {
+                markers[i].setVisible(false);
+            }
+        };
     };
 }
 
