@@ -12,3 +12,8 @@ body {
     position: absolute;
     right: 0px;
 }
+
+#pixBox {
+    width: 180px;
+    height: 150px;
+}
