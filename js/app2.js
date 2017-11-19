@@ -1,8 +1,9 @@
 // models
-var init_locations = [{
-        title: 'my airbnb',
-        latLng: { lat: 50.10504, lng: 8.64451 }
-    },
+var init_locations = [
+    /*{
+            title: 'my airbnb',
+            latLng: { lat: 50.10504, lng: 8.64451 }
+        },*/
     {
         title: 'messe frankfurt',
         latLng: { lat: 50.1102447, lng: 8.6483381 }
@@ -12,27 +13,27 @@ var init_locations = [{
         latLng: { lat: 50.1030925, lng: 8.6740583 }
     },
     {
-        title: 'Römerberg 羅馬廣場',
+        title: 'Römerberg',
         latLng: { lat: 50.1107073, lng: 8.6819623 }
     },
     {
-        title: 'Kleinmarkthalle 小市場',
+        title: 'Kleinmarkthalle',
         latLng: { lat: 50.1128541, lng: 8.6836329 }
     },
     {
-        title: 'Kaiserdom St. Bartholomäus 教堂',
+        title: 'Kaiserdom St. Bartholomäus',
         latLng: { lat: 50.1106631, lng: 8.6854204 }
     },
     {
-        title: 'Gerechtigkeitsbrunnen 正液噴泉',
+        title: 'Gerechtigkeitsbrunnen',
         latLng: { lat: 50.1104364, lng: 8.682155 }
     },
     {
-        title: 'The Hauptwache 衛戊大本營(餐廳聚集點)',
+        title: 'The Hauptwache',
         latLng: { lat: 50.1134865, lng: 8.6787432 }
     },
     {
-        title: 'MyZeil - Shopping Mall',
+        title: 'MyZeil',
         latLng: { lat: 50.1143519, lng: 8.6814498 }
     }
 ];
@@ -47,19 +48,13 @@ var infowindow = new google.maps.InfoWindow();
 
 var markers = [];
 
-function toggleMarker(marker) {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-    setTimeout(function() {
-        marker.setAnimation(null);
-    }, 1200);
-};
+var content = '';
 
 function populateInfoWindow(marker, infowindow) {
+    //getFlickrPix(marker);
     if (infowindow.marker != marker) {
         infowindow.marker = marker;
-        infowindow.setContent('<div>Name: ' + marker.title + ' </div>' +
-            '<div>Lat: ' + marker.getPosition().lat() + '</div>' +
-            '<div>Lng: ' + marker.getPosition().lng() + ' </div>');
+        infowindow.setContent('<div>Flickr pix for: ' + marker.title + ' ' + content + '</div>');
         infowindow.open(map, marker);
         infowindow.addListener('closeclick', function() {
             infowindow.setMarker(null);
@@ -68,7 +63,38 @@ function populateInfoWindow(marker, infowindow) {
     toggleMarker(marker);
 }
 
+function getFlickrPix(marker) {
+
+    var flickrUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=86ffc39a91d899bc368624d54cc01ef7&text=" +
+        marker.title.replace(/ /g, "+") + "&lat=" + marker.getPosition().lat() + "&lon=" + marker.getPosition().lng() +
+        "&radius=3&radius_units=km&per_page=50&page=1&format=json&jsoncallback=?";
+
+    $.ajax({
+        url: flickrUrl,
+        dataType: "jsonp",
+        success: function(response) {
+            var x = Math.floor(Math.random() * (49 - 0 + 1)) + 0;
+            var flickrInfo = response.photos.photo[x];
+            var pixLink = "https://farm" + flickrInfo.farm + ".staticflickr.com/" + flickrInfo.server +
+                "/" + flickrInfo.id + "_" + flickrInfo.secret + "_m.jpg";
+            content = '<p><img id="pixBox" src="' + pixLink + '"/></a></p>';
+        },
+        error: function(response) {
+            content = 'flickr api error occured';
+            //alert('flickr api error occured');
+        }
+    });
+};
+
+function toggleMarker(marker) {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() {
+        marker.setAnimation(null);
+    }, 1200);
+};
+
 var koViewModel = function(map) {
+
     var self = this;
 
     self.googleMap = map;
@@ -90,10 +116,12 @@ var koViewModel = function(map) {
             animation: google.maps.Animation.DROP,
             map: self.googleMap,
         });
+        getFlickrPix(marker);
 
         markers.push(marker);
 
         marker.addListener('click', function() {
+            getFlickrPix(this);
             populateInfoWindow(this, infowindow);
         });
 
@@ -108,6 +136,7 @@ var koViewModel = function(map) {
 
         for (var i = 0; i < markers.length; i++) {
             if (markers[i].title === self.currentPlace().title()) {
+                getFlickrPix(markers[i]);
                 toggleMarker(markers[i]);
                 populateInfoWindow(markers[i], infowindow);
             }
@@ -117,7 +146,7 @@ var koViewModel = function(map) {
     self.userInput = ko.observable('');
 
     self.filterMarkers = function() {
-        if(infowindow) {
+        if (infowindow) {
             infowindow.close();
         }
         var searchInput = self.userInput().toLowerCase();
