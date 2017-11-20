@@ -1,10 +1,5 @@
 // models
-var init_locations = [
-    /*{
-            title: 'my airbnb',
-            latLng: { lat: 50.10504, lng: 8.64451 }
-        },*/
-    {
+var init_locations = [{
         title: 'messe frankfurt',
         latLng: { lat: 50.1102447, lng: 8.6483381 }
     },
@@ -50,8 +45,8 @@ var markers = [];
 
 var content = '';
 
+// generate google map api info window content which is exrtracted from Flickr
 function populateInfoWindow(marker, infowindow) {
-    //getFlickrPix(marker);
     if (infowindow.marker != marker) {
         infowindow.marker = marker;
         infowindow.setContent('<div>Flickr pix for: ' + marker.title + ' ' + content + '</div>');
@@ -63,36 +58,44 @@ function populateInfoWindow(marker, infowindow) {
     toggleMarker(marker);
 }
 
+// get picture links from Flickr
 function getFlickrPix(marker) {
 
-    var flickrUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=86ffc39a91d899bc368624d54cc01ef7&text=" +
-        marker.title.replace(/ /g, "+") + "&lat=" + marker.getPosition().lat() + "&lon=" + marker.getPosition().lng() +
-        "&radius=3&radius_units=km&per_page=50&page=1&format=json&jsoncallback=?";
+    var flickrApiKey = "8a50fd348c22d2b59d1ef5aba1c6e272";
 
+    var flickrUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + flickrApiKey +
+        "&text=" + marker.title.replace(/ /g, "+") + "&lat=" + marker.getPosition().lat() + "&lon=" + marker.getPosition().lng() +
+        "&radius=3&radius_units=km&per_page=50&page=1&format=json&jsoncallback=?";
     $.ajax({
         url: flickrUrl,
         dataType: "jsonp",
         success: function(response) {
-            var x = Math.floor(Math.random() * (49 - 0 + 1)) + 0;
-            var flickrInfo = response.photos.photo[x];
-            var pixLink = "https://farm" + flickrInfo.farm + ".staticflickr.com/" + flickrInfo.server +
-                "/" + flickrInfo.id + "_" + flickrInfo.secret + "_m.jpg";
-            content = '<p><img id="pixBox" src="' + pixLink + '"/></a></p>';
+            if (response.stat == 'ok') {
+                var x = Math.floor(Math.random() * (49 - 0 + 1)) + 0;
+                var flickrInfo = response.photos.photo[x];
+                var pixLink = "https://farm" + flickrInfo.farm + ".staticflickr.com/" + flickrInfo.server +
+                    "/" + flickrInfo.id + "_" + flickrInfo.secret + "_m.jpg";
+                content = '<p><img id="pixBox" src="' + pixLink + '"/></a></p>';
+            } else {
+                content = 'flickr api error occured! Message: ' + response.message;
+            }
+
         },
         error: function(response) {
             content = 'flickr api error occured';
-            //alert('flickr api error occured');
         }
     });
-};
+}
 
+// set animation on Markers. Whenever it is clicked on the map or selected on the list, it bounces on the google map
 function toggleMarker(marker) {
     marker.setAnimation(google.maps.Animation.BOUNCE);
     setTimeout(function() {
         marker.setAnimation(null);
     }, 1200);
-};
+}
 
+// view model
 var koViewModel = function(map) {
 
     var self = this;
@@ -160,12 +163,13 @@ var koViewModel = function(map) {
             } else {
                 markers[i].setVisible(false);
             }
-        };
+        }
     };
-}
+};
 
 var my_position = { lat: 50.110924, lng: 8.682127 };
 
+// create google map
 function createMap() {
     return new google.maps.Map(document.getElementById('map'), {
         center: my_position,
