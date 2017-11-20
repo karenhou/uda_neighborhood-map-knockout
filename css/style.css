@@ -2,18 +2,41 @@ html,
 body {
     height: 100%;
     margin: 0;
-    padding: 0;
+    padding-top: 35px;
 }
 
 #map {
+    top: 0px;
     bottom: 0px;
-    height: 100%;
-    left: 362px;
+    left: 0px;
     position: absolute;
     right: 0px;
+    overflow: hidden;
+    min-height: 500px;
+    min-width: : 400px;
 }
 
 #pixBox {
     width: 180px;
     height: 150px;
+}
+
+h1 {
+    color: white;
+}
+
+.header {
+    padding-left: 0px;
+    padding-right: 0px;
+    background-size: 100% auto;
+}
+
+.row-padding {
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.list {
+    position: inherit;
 }

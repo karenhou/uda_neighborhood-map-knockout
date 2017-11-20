@@ -9,25 +9,31 @@
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div>
-                <input type="text" data-bind="textInput: userInput, event:{keyup: filterMarkers}" autocomplete="on" id="place-filter" placeholder="Filter List">
-            </div>
-        </div>
-        <div class="row">
-            <ul data-bind="foreach: locationList">
-                <li data-bind="text: title, click: $parent.setPlace"></li>
-                <hr>
+    <header>
+        <nav class="container-fluid navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <h1>My Neighborhood Map</h1>
+            <ul class="navbar-nav mr-auto">
             </ul>
+            <form class="form-inline mt-2 mt-md-0 d-inline w-50">
+                <input class="form-control mr-sm-2 d-inline w-100" type="text" data-bind="textInput: userInput, event:{keyup: filterMarkers}" autocomplete="on" id="place-filter" placeholder="Filter">
+            </form>
+        </nav>
+    </header>
+    <main class="container-fluid">
+        <div class="row row-padding">
+            <div class="col-12 col-md-8 col-sm-8">
+                <div id="map"></div>
+            </div>
+            <aside class="col-6 col-md-4 col-sm-4 list">
+                <div class="list" data-bind="foreach: locationList">
+                    <div data-bind="text: title, click: $parent.setPlace"></div>
+                    <hr>
+                </div>
+            </aside>
         </div>
-        <div class="row">
-            <div id="map"></div>
-        </div>
-    </div>
+    </main>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE5Q6dS-EkbBx8P3C5PLU0XKml4dcShpk">
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE5Q6dS-EkbBx8P3C5PLU0XKml4dcShpk"></script>
     <script src="js/lib/knockout-3.4.2.js"></script>
     <script src="js/app2.js"></script>
 </body>
