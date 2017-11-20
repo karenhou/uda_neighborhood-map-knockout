@@ -167,17 +167,26 @@ var koViewModel = function(map) {
     };
 };
 
-var my_position = { lat: 50.110924, lng: 8.682127 };
+var frankfurt_latLng = { lat: 50.110924, lng: 8.682127 };
+
+var googleMap;
 
 // create google map
 function createMap() {
     return new google.maps.Map(document.getElementById('map'), {
-        center: my_position,
+        center: frankfurt_latLng,
         zoom: 14
     });
 }
 
 google.maps.event.addDomListener(window, 'load', function() {
-    var googleMap = createMap();
+    googleMap = createMap();
     ko.applyBindings(new koViewModel(googleMap));
+
+});
+
+google.maps.event.addDomListener(window, "resize", function() {
+    var center = googleMap.getCenter();
+    google.maps.event.trigger(googleMap, "resize");
+    googleMap.setCenter(center);
 });
