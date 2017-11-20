@@ -12,3 +12,7 @@ https://stackoverflow.com/questions/14657779/google-maps-bounce-animation-on-mar
 https://www.w3resource.com/API/flickr/tutorial.php#
 
 https://www.flickr.com/services/api/misc.urls.html
+
+http://ramblibrarian.blogspot.tw/2016/02/mashing-up-flickr-api-with-google-maps.html
+
+https://stackoverflow.com/questions/18444161/google-maps-responsive-resize
