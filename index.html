@@ -26,11 +26,11 @@
     </header>
     <main class="container-fluid">
         <div class="row row-padding">
-            <div class="col-12 col-md-8 col-sm-8">
+            <div class="col-md-8 col-sm-8 map-margin">
                 <div id="map"></div>
             </div>
-            <aside class="col-6 col-md-4 col-sm-4 list">
-                <div class="list" data-bind="foreach: locationList">
+            <aside class="col-md-4 col-sm-4 list-margin">
+                <div data-bind="foreach: locationList">
                     <div data-bind="text: title, click: $parent.setPlace"></div>
                     <hr>
                 </div>

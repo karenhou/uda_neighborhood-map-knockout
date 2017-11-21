@@ -37,6 +37,27 @@ h1 {
     padding-right: 15px;
 }
 
-.list {
-    position: inherit;
+@media screen and (max-width:824px) {
+
+    .map-margin {
+        margin-top: 50px;
+    }
+
+    .list-margin {
+        margin-top: 50px;
+    }
+}
+
+@media screen and (max-width:576px) {
+
+    .list-margin {
+        margin-top: 510px;
+    }
+}
+
+@media screen and (max-width:428px) {
+
+    .map-margin {
+        margin-top: 95px;
+    }
 }
