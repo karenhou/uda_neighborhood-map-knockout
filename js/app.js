@@ -1,41 +1,6 @@
-// models
-var initLocations = [{
-        title: 'messe frankfurt',
-        latLng: { lat: 50.1102447, lng: 8.6483381 }
-    },
-    {
-        title: 'Städel Museum',
-        latLng: { lat: 50.1030925, lng: 8.6740583 }
-    },
-    {
-        title: 'Römerberg',
-        latLng: { lat: 50.1107073, lng: 8.6819623 }
-    },
-    {
-        title: 'Kleinmarkthalle',
-        latLng: { lat: 50.1128541, lng: 8.6836329 }
-    },
-    {
-        title: 'Kaiserdom St. Bartholomäus',
-        latLng: { lat: 50.1106631, lng: 8.6854204 }
-    },
-    {
-        title: 'Gerechtigkeitsbrunnen',
-        latLng: { lat: 50.1104364, lng: 8.682155 }
-    },
-    {
-        title: 'The Hauptwache',
-        latLng: { lat: 50.1134865, lng: 8.6787432 }
-    },
-    {
-        title: 'MyZeil',
-        latLng: { lat: 50.1143519, lng: 8.6814498 }
-    }
-];
-
 var Locations = function(data) {
-    this.title = ko.observable(data.title);
-    this.latLng = ko.observable(data.latLng);
+    this.title = data.title;
+    this.latLng = data.latLng;
     this.marker = null;
 };
 
@@ -79,7 +44,7 @@ function getFlickrPix(marker) {
                 var flickrInfo = response.photos.photo[x];
                 var pixLink = "https://farm" + flickrInfo.farm + ".staticflickr.com/" + flickrInfo.server +
                     "/" + flickrInfo.id + "_" + flickrInfo.secret + "_m.jpg";
-                content = '<p><img id="pixBox" src="' + pixLink + '"/></a></p>';
+                content = '<p><img id="pix-box" src="' + pixLink + '"/></a></p>';
             } else {
                 content = 'flickr api error occured! Message: ' + response.message;
             }
@@ -101,7 +66,7 @@ function toggleMarker(marker) {
 }
 
 // view model
-var koViewModel = function(map) {
+var KoViewModel = function(map) {
 
     var self = this;
 
@@ -115,8 +80,8 @@ var koViewModel = function(map) {
 
     for (var i = 0; i < self.locationList().length; i++) {
 
-        var position = self.locationList()[i].latLng();
-        var title = self.locationList()[i].title();
+        var position = self.locationList()[i].latLng;
+        var title = self.locationList()[i].title;
 
         var marker = new google.maps.Marker({
             position: position,
@@ -153,7 +118,7 @@ var koViewModel = function(map) {
         self.currentPlace(clickedPlace);
 
         for (var i = 0; i < markers.length; i++) {
-            if (markers[i].title === self.currentPlace().title()) {
+            if (markers[i].title === self.currentPlace().title) {
                 getFlickrPix(markers[i]);
                 toggleMarker(markers[i]);
                 populateInfoWindow(markers[i], infowindow);
@@ -205,6 +170,6 @@ function resetMapCenter() {
 function initMap() {
     infowindow = new google.maps.InfoWindow();
     googleMap = createMap();
-    ko.applyBindings(new koViewModel(googleMap));
+    ko.applyBindings(new KoViewModel(googleMap));
     resetMapCenter();
 }
