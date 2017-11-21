@@ -124,6 +124,7 @@ var koViewModel = function(map) {
 
         markers.push(marker);
 
+        /*jshint loopfunc: true */
         marker.addListener('click', function() {
             getFlickrPix(this);
             populateInfoWindow(this, infowindow);
