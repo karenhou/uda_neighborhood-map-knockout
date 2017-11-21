@@ -1,5 +1,5 @@
 // models
-var init_locations = [{
+var initLocations = [{
         title: 'messe frankfurt',
         latLng: { lat: 50.1102447, lng: 8.6483381 }
     },
@@ -39,11 +39,15 @@ var Locations = function(data) {
     this.marker = null;
 };
 
-var infowindow = new google.maps.InfoWindow();
+var infowindow;
 
 var markers = [];
 
 var content = '';
+
+var frankfurt_latLng = { lat: 50.110924, lng: 8.682127 };
+
+var googleMap;
 
 // generate google map api info window content which is exrtracted from Flickr
 function populateInfoWindow(marker, infowindow) {
@@ -105,7 +109,7 @@ var koViewModel = function(map) {
 
     this.locationList = ko.observableArray([]);
 
-    init_locations.forEach(function(place) {
+    initLocations.forEach(function(place) {
         self.locationList.push(new Locations(place));
     });
 
@@ -123,6 +127,15 @@ var koViewModel = function(map) {
         getFlickrPix(marker);
 
         markers.push(marker);
+
+        /*jshint loopfunc: true */
+        map.addListener('center_changed', function() {
+            // 3 seconds after the center of the map has changed, pan back to the
+            // marker.
+            window.setTimeout(function() {
+                map.panTo(marker.getPosition());
+            }, 3000);
+        });
 
         /*jshint loopfunc: true */
         marker.addListener('click', function() {
@@ -158,9 +171,9 @@ var koViewModel = function(map) {
 
         self.locationList.removeAll();
 
-        for (var i = 0; i < init_locations.length; i++) {
-            if (init_locations[i].title.toLowerCase().indexOf(searchInput) !== -1) {
-                self.locationList.push(new Locations(init_locations[i]));
+        for (var i = 0; i < initLocations.length; i++) {
+            if (initLocations[i].title.toLowerCase().indexOf(searchInput) !== -1) {
+                self.locationList.push(new Locations(initLocations[i]));
                 markers[i].setVisible(true);
             } else {
                 markers[i].setVisible(false);
@@ -169,9 +182,9 @@ var koViewModel = function(map) {
     };
 };
 
-var frankfurt_latLng = { lat: 50.110924, lng: 8.682127 };
-
-var googleMap;
+function googleMapError() {
+    alert('Unable to load Google Map');
+}
 
 // create google map
 function createMap() {
@@ -181,14 +194,17 @@ function createMap() {
     });
 }
 
-google.maps.event.addDomListener(window, 'load', function() {
+function resetMapCenter() {
+    google.maps.event.addDomListener(window, "resize", function() {
+        var center = googleMap.getCenter();
+        google.maps.event.trigger(googleMap, "resize");
+        googleMap.setCenter(center);
+    });
+}
+
+function initMap() {
+    infowindow = new google.maps.InfoWindow();
     googleMap = createMap();
     ko.applyBindings(new koViewModel(googleMap));
-
-});
-
-google.maps.event.addDomListener(window, "resize", function() {
-    var center = googleMap.getCenter();
-    google.maps.event.trigger(googleMap, "resize");
-    googleMap.setCenter(center);
-});
+    resetMapCenter();
+}
