@@ -31,5 +31,7 @@ Here are the references I've used during this project
 
 * https://stackoverflow.com/questions/18444161/google-maps-responsive-resize
 
+* https://developers.google.com/maps/documentation/javascript/events
+
 ## Known Issues
 Flickr API keys seems to expire after a while which will cause infoWindow to unable to load the images from Flickr
