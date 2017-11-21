@@ -61,7 +61,7 @@ function populateInfoWindow(marker, infowindow) {
 // get picture links from Flickr
 function getFlickrPix(marker) {
 
-    var flickrApiKey = "8a50fd348c22d2b59d1ef5aba1c6e272";
+    var flickrApiKey = "b24a1bb2f8e0ffd430f255352fc504b8";
 
     var flickrUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + flickrApiKey +
         "&text=" + marker.title.replace(/ /g, "+") + "&lat=" + marker.getPosition().lat() + "&lon=" + marker.getPosition().lng() +
@@ -83,6 +83,7 @@ function getFlickrPix(marker) {
         },
         error: function(response) {
             content = 'flickr api error occured';
+            alert('flickr api error occured');
         }
     });
 }
